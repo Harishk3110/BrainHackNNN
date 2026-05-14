@@ -570,3 +570,48 @@ Commit: pending
 Push status: pending
 
 Next: Continue AE random-opponent optimization with one different policy change.
+
+## ITERATION 13
+
+Task: AE
+
+Experiment: Reduce visible-target score multiplier from `10` to `5` under the alternating-turn policy.
+
+Hypothesis: Favoring closer collectibles may improve seeded-random-opponent reward.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -m py_compile ae\src\ae_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+```
+
+Metrics before:
+
+- Seeded-random-opponent average reward: `81.400`
+- Seeded-random-opponent invalid actions: `0.000`
+- Seeded-random-opponent repeated locations: `168.000`
+
+Metrics after:
+
+- Seeded-random-opponent average reward: `81.400`
+- Seeded-random-opponent invalid actions: `0.000`
+- Seeded-random-opponent repeated locations: `168.000`
+
+Runtime before: `29.520s`
+
+Runtime after: `26.549s`
+
+Decision: reverted
+
+Reason: No metric improvement.
+
+Commit: pending
+
+Push status: pending
+
+Next: Continue with a different AE policy experiment or wait for dataset paths for ASR/CV/NLP official evaluation.
