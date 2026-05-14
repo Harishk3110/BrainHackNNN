@@ -137,3 +137,45 @@ Decision: kept
 Reason: Improves deterministic AE reward, preserves action validity and visible-target behavior, and adds no dependencies.
 
 Next experiment: Add opportunistic bomb placement near visible enemy bases or enemy agents.
+
+## ITERATION 3
+
+Task: AE
+
+Experiment: Opportunistically place bombs when a visible enemy base or enemy agent is aligned within blast radius 2, while skipping obvious allied entities in the same blast line.
+
+Hypothesis: Attack rewards are high, so tightly gated bomb placement near visible enemies could improve reward without slowing inference.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -m py_compile ae\src\ae_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -c "<synthetic bomb placement and safety checks>"
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -c "<AE simulation comparison against iteration 2 over seeds 0..4>"
+```
+
+Result:
+
+- Synthetic checks:
+  - enemy base within blast line -> `PLACE_BOMB`
+  - ally in blast line -> skipped bomb and used fallback
+  - enemy too far -> skipped bomb
+  - no bombs / illegal bomb action -> skipped bomb
+- AE simulation comparison with stationary other agents:
+  - Seed 0: iteration 2 `84.0`, experiment `84.0`
+  - Seed 1: iteration 2 `84.0`, experiment `84.0`
+  - Seed 2: iteration 2 `84.0`, experiment `84.0`
+  - Seed 3: iteration 2 `84.0`, experiment `84.0`
+  - Seed 4: iteration 2 `84.0`, experiment `84.0`
+
+Runtime: local five-seed comparison completed in about 38 seconds after dependencies were available.
+
+Decision: reverted
+
+Reason: No measured reward improvement in the current deterministic validation, so the conservative choice is to avoid extra combat behavior until a scenario shows benefit.
+
+Next experiment: Improve NLP with lightweight lexical retrieval and extractive answers.
