@@ -97,14 +97,26 @@ Local deterministic simulation metric:
 - Score per seed using `til_environment`.
 - Average reward over fixed seeds.
 - Runtime of simulation comparison.
-- Invalid actions: action mask is checked by policy; targeted synthetic checks verify legal fallback. A dedicated counter is not yet wired into the local comparison harness.
-- Repeated-location count: policy tracks recent locations internally; a dedicated external metric is not yet wired into the local comparison harness.
+- Invalid actions.
+- Repeated-location count.
+
+Reusable local command:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+```
 
 Current best local AE result:
 
 - Previous legal-forward baseline: `0.0` reward on seeds `0..2` with stationary other agents.
 - Visible reward targeting: `55.0` reward on seeds `0..2`.
 - Recent-location exploration: `84.0` reward on seeds `0..4`.
+- Current reusable evaluator result over seeds `0..4`:
+  - per-seed reward: `84.0`, `84.0`, `84.0`, `84.0`, `84.0`
+  - average reward: `84.000`
+  - average invalid actions: `0.000`
+  - average repeated locations: `184.000`
+  - total runtime: `11.966s`
 - Reverted experiments:
   - opportunistic bomb placement: neutral at `84.0` vs `84.0`.
   - target weighting multiplier change: neutral at `84.0` vs `84.0`.
@@ -144,7 +156,7 @@ Official score:
 
 ## Current Best Metrics Summary
 
-- AE: best measured local deterministic reward `84.0` on seeds `0..4` with stationary other agents.
+- AE: best measured local deterministic reward `84.0` on seeds `0..4` with stationary other agents; invalid actions `0`.
 - NLP: synthetic retrieval/answer checks pass; official score unavailable.
 - Noise: synthetic valid-JPEG check passes; official pass rate unavailable.
 - ASR: official score unavailable; baseline expected poor due to empty transcript output.

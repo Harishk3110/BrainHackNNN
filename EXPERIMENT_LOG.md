@@ -286,3 +286,50 @@ Decision: reverted
 Reason: No measured gain versus the current AE policy.
 
 Next experiment: Re-check repo state and look for a measurable CV or noising sanity improvement.
+
+## ITERATION 7
+
+Task: AE
+
+Experiment: Add a reusable local AE evaluator script for deterministic seeded policy checks.
+
+Hypothesis: Replacing one-off inline AE simulation commands with a reusable script will improve metric reliability and add invalid-action, repeated-location, and runtime tracking before more policy changes.
+
+Files changed:
+
+- `scripts/eval_ae_local.py`
+- `METRICS_REPORT.md`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -m py_compile scripts\eval_ae_local.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+```
+
+Metrics before:
+
+- AE average reward over seeds `0..4`: `84.000`
+- Invalid actions: not tracked by reusable script.
+- Repeated locations: not tracked by reusable script.
+
+Metrics after:
+
+- Seed rewards: `84.0`, `84.0`, `84.0`, `84.0`, `84.0`
+- Average reward: `84.000`
+- Average invalid actions: `0.000`
+- Average repeated locations: `184.000`
+
+Runtime before: one-off five-seed comparison previously took about `59s` in the slowest logged run.
+
+Runtime after: reusable script total runtime `11.966s`.
+
+Decision: kept
+
+Reason: Metrics are equal for reward, strictly more informative, and faster to run as a repeatable validation command.
+
+Commit: pending
+
+Push status: pending
+
+Next: Try one AE policy change that reduces repeated locations without lowering average reward.
