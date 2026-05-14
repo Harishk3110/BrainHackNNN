@@ -179,3 +179,38 @@ Decision: reverted
 Reason: No measured reward improvement in the current deterministic validation, so the conservative choice is to avoid extra combat behavior until a scenario shows benefit.
 
 Next experiment: Improve NLP with lightweight lexical retrieval and extractive answers.
+
+## ITERATION 4
+
+Task: NLP
+
+Experiment: Add standard-library lexical retrieval and extractive sentence answers.
+
+Hypothesis: The baseline returns no documents and an empty answer. Ranking documents by lexical overlap and returning the best matching sentence should improve retrieval credit and may improve answer-equivalence credit without adding dependencies.
+
+Files changed:
+
+- `nlp/src/nlp_manager.py`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -m py_compile nlp\src\nlp_manager.py nlp\src\nlp_server.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -c "<synthetic NLP corpus and QA checks>"
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 --with fastapi==0.115.12 --with 'uvicorn[standard]==0.34.2' python -c "<NLP server import and manager QA check>"
+```
+
+Result:
+
+- Empty state: `{'documents': [], 'answer': ''}`.
+- Synthetic red-key query: returned `DOC-2` first and answer `The red key is hidden under the garden bench.`
+- Synthetic weather query: returned `DOC-3` first and answer `Singapore has humid weather.`
+- Server import check: `{'message': 'health ok'}` and valid QA output.
+
+Runtime: all lightweight checks completed in seconds.
+
+Decision: kept
+
+Reason: Clear improvement over empty baseline, preserves official output shape, and adds no dependencies.
+
+Next experiment: Tune NLP scoring to reduce false document matches and improve answer sentence selection.
