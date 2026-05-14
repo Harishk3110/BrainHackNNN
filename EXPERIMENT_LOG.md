@@ -524,3 +524,49 @@ Commit: pending
 Push status: pending
 
 Next: Optimize AE against seeded random opponents while preserving stay-opponent score.
+
+## ITERATION 12
+
+Task: AE
+
+Experiment: Avoid visible imminent enemy bomb blast lines before reward targeting.
+
+Hypothesis: Random opponents can place bombs; avoiding visible enemy bombs with low timer may improve random-opponent reward without affecting stationary-opponent score.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -m py_compile ae\src\ae_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents stay
+```
+
+Metrics before:
+
+- Seeded-random-opponent average reward: `81.400`
+- Seeded-random-opponent invalid actions: `0.000`
+- Stay-opponent average reward: `182.000`
+
+Metrics after:
+
+- Seeded-random-opponent average reward: `81.400`
+- Seeded-random-opponent invalid actions: `0.000`
+- Stay-opponent average reward: `182.000`
+
+Runtime before: random `29.520s`; stay `25.016s`
+
+Runtime after: random `31.558s`; stay `27.590s`
+
+Decision: reverted
+
+Reason: Metrics were unchanged and runtime increased slightly.
+
+Commit: pending
+
+Push status: pending
+
+Next: Continue AE random-opponent optimization with one different policy change.
