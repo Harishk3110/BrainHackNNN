@@ -18,6 +18,7 @@ class AEManager:
         # This is where you can initialize your model and any static configurations.
         # TODO
         self.recent_locations: list[tuple[int, int]] = []
+        self.prefer_left_turn = True
 
     def ae(self, observation: dict[str, int | list[int]]) -> int:
         """Gets the next action for the agent, based on the observation.
@@ -33,6 +34,7 @@ class AEManager:
 
         if observation.get("step") == 0:
             self.recent_locations = []
+            self.prefer_left_turn = True
 
         self._remember_location(observation.get("location"))
 
@@ -146,7 +148,13 @@ class AEManager:
             candidates.append((0 if recency == 0 else 1, -recency, action))
 
         if candidates and all(candidate[0] == 1 for candidate in candidates):
-            for action in (self.ACTION_LEFT, self.ACTION_RIGHT):
+            turn_order = (
+                (self.ACTION_LEFT, self.ACTION_RIGHT)
+                if self.prefer_left_turn
+                else (self.ACTION_RIGHT, self.ACTION_LEFT)
+            )
+            self.prefer_left_turn = not self.prefer_left_turn
+            for action in turn_order:
                 if self._is_legal(action, action_mask):
                     return action
 

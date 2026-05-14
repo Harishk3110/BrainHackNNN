@@ -380,3 +380,51 @@ Commit: pending
 Push status: pending
 
 Next: Re-run state checks, then try one more AE exploration improvement or move to Docker reporting if Docker is available.
+
+## ITERATION 9
+
+Task: AE
+
+Experiment: Alternate left/right turn preference when both forward and backward lead to recently visited locations.
+
+Hypothesis: Always turning left can create a deterministic loop. Alternating turn direction may expose new paths and improve reward.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+- `METRICS_REPORT.md`
+- `TRAINING_RUNS.md`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -m py_compile ae\src\ae_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+```
+
+Metrics before:
+
+- Average reward: `149.000`
+- Average invalid actions: `0.000`
+- Average repeated locations: `176.000`
+
+Metrics after:
+
+- Seed rewards: `182.0`, `182.0`, `182.0`, `182.0`, `182.0`
+- Average reward: `182.000`
+- Average invalid actions: `0.000`
+- Average repeated locations: `179.000`
+
+Runtime before: `12.565s`
+
+Runtime after: `25.898s`
+
+Decision: kept
+
+Reason: Mixed result, but reward improved by `33.0` with no invalid actions. The slight repeat-count increase is acceptable because score gain is the primary AE metric.
+
+Commit: pending
+
+Push status: pending
+
+Next: Try to preserve the reward gain while reducing repeated locations, or validate Docker if Docker Desktop becomes available.

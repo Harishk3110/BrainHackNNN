@@ -32,3 +32,22 @@ Reason:
 - Runtime: `12.565s`
 - Artifact path: code-only policy in `ae/src/ae_manager.py`
 - Decision: kept
+
+### AE Alternating Turn Heuristic
+
+- Task: AE
+- Date/time: 2026-05-14
+- Command:
+  ```powershell
+  $env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+  ```
+- Dataset path: not applicable; uses `til-26-ae/til_environment`.
+- Hyperparameters:
+  - recent memory length: `12`
+  - turn when forward/backward are both recent repeats
+  - alternate repeated-corridor turn preference between left and right
+- Metric before: average reward `149.000`, repeated locations `176.000`, invalid actions `0.000`
+- Metric after: average reward `182.000`, repeated locations `179.000`, invalid actions `0.000`
+- Runtime: `25.898s`
+- Artifact path: code-only policy in `ae/src/ae_manager.py`
+- Decision: kept; reward gain outweighed small repeat-count regression.
