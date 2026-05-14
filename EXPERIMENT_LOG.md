@@ -428,3 +428,49 @@ Commit: pending
 Push status: pending
 
 Next: Try to preserve the reward gain while reducing repeated locations, or validate Docker if Docker Desktop becomes available.
+
+## ITERATION 10
+
+Task: AE
+
+Experiment: Increase recent-location memory length from `12` to `24`.
+
+Hypothesis: Longer memory may detect longer loops and reduce repeated-location behavior.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -m py_compile ae\src\ae_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+```
+
+Metrics before:
+
+- Average reward: `182.000`
+- Average invalid actions: `0.000`
+- Average repeated locations: `179.000`
+
+Metrics after:
+
+- Seed rewards: `182.0`, `182.0`, `182.0`, `182.0`, `182.0`
+- Average reward: `182.000`
+- Average invalid actions: `0.000`
+- Average repeated locations: `180.000`
+
+Runtime before: `25.898s`
+
+Runtime after: `26.072s`
+
+Decision: reverted
+
+Reason: Reward was unchanged and repeated locations worsened slightly.
+
+Commit: pending
+
+Push status: pending
+
+Next: Re-check Docker availability; if still blocked, continue with one AE policy experiment.
