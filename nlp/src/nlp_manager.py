@@ -75,7 +75,10 @@ class NLPManager:
 
         question_tokens = self._tokenize(question)
         ranked_documents = self._rank_documents(question_tokens)
-        top_ids = [doc_id for _, doc_id in ranked_documents[:3]]
+        if not ranked_documents or ranked_documents[0][0] <= 0:
+            return {"documents": [], "answer": ""}
+
+        top_ids = [doc_id for score, doc_id in ranked_documents if score > 0][:3]
         answer = self._best_answer_sentence(question_tokens, top_ids)
 
         return {"documents": top_ids, "answer": answer}

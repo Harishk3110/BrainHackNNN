@@ -214,3 +214,36 @@ Decision: kept
 Reason: Clear improvement over empty baseline, preserves official output shape, and adds no dependencies.
 
 Next experiment: Tune NLP scoring to reduce false document matches and improve answer sentence selection.
+
+## ITERATION 5
+
+Task: NLP
+
+Experiment: Suppress zero-score retrieval results.
+
+Hypothesis: Returning arbitrary zero-overlap documents can hurt no-answer cases and pollute top-3 retrieval. If no document has positive lexical overlap, return empty docs and answer; otherwise return only positively scored docs.
+
+Files changed:
+
+- `nlp/src/nlp_manager.py`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -m py_compile nlp\src\nlp_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -c "<synthetic hit/miss/stopword-only QA checks>"
+```
+
+Result:
+
+- Positive query: `{'documents': ['DOC-1'], 'answer': 'The red key is under the garden bench.'}`
+- No-match query: `{'documents': [], 'answer': ''}`
+- Stopword-only query: `{'documents': [], 'answer': ''}`
+
+Runtime: lightweight checks completed in seconds.
+
+Decision: kept
+
+Reason: Preserves the positive synthetic answer and improves conservative behavior for questions with no lexical evidence.
+
+Next experiment: Improve ASR baseline only if local assets or lightweight dependencies are available; otherwise return to AE.
