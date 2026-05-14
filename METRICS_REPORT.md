@@ -111,12 +111,13 @@ Current best local AE result:
 - Previous legal-forward baseline: `0.0` reward on seeds `0..2` with stationary other agents.
 - Visible reward targeting: `55.0` reward on seeds `0..2`.
 - Recent-location exploration: `84.0` reward on seeds `0..4`.
+- Turn-on-revisited-corridor exploration: `149.0` reward on seeds `0..4`.
 - Current reusable evaluator result over seeds `0..4`:
-  - per-seed reward: `84.0`, `84.0`, `84.0`, `84.0`, `84.0`
-  - average reward: `84.000`
+  - per-seed reward: `149.0`, `149.0`, `149.0`, `149.0`, `149.0`
+  - average reward: `149.000`
   - average invalid actions: `0.000`
-  - average repeated locations: `184.000`
-  - total runtime: `11.966s`
+  - average repeated locations: `176.000`
+  - total runtime: `12.565s`
 - Reverted experiments:
   - opportunistic bomb placement: neutral at `84.0` vs `84.0`.
   - target weighting multiplier change: neutral at `84.0` vs `84.0`.
@@ -127,6 +128,7 @@ Current best policy:
 - Chooses legal actions.
 - Steers toward visible mission/resource/recon tiles.
 - Uses recent-location memory to reduce loops when no reward tile is visible.
+- Turns left/right when forward and backward both lead to recently visited locations.
 
 ## Noising Metrics
 
@@ -156,7 +158,7 @@ Official score:
 
 ## Current Best Metrics Summary
 
-- AE: best measured local deterministic reward `84.0` on seeds `0..4` with stationary other agents; invalid actions `0`.
+- AE: best measured local deterministic reward `149.0` on seeds `0..4` with stationary other agents; invalid actions `0`.
 - NLP: synthetic retrieval/answer checks pass; official score unavailable.
 - Noise: synthetic valid-JPEG check passes; official pass rate unavailable.
 - ASR: official score unavailable; baseline expected poor due to empty transcript output.

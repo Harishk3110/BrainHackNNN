@@ -328,8 +328,55 @@ Decision: kept
 
 Reason: Metrics are equal for reward, strictly more informative, and faster to run as a repeatable validation command.
 
+Commit: `7b8ba05`
+
+Push status: pushed to `origin/main`
+
+Next: Try one AE policy change that reduces repeated locations without lowering average reward.
+
+## ITERATION 8
+
+Task: AE
+
+Experiment: Turn left/right when both forward and backward movement lead to recently visited locations.
+
+Hypothesis: The current fallback can still shuttle through already visited cells because it prefers movement whenever legal. Turning when both movement options are known repeats should expose a different forward path, reduce repeated locations, and improve reward.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+- `METRICS_REPORT.md`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -m py_compile ae\src\ae_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+```
+
+Metrics before:
+
+- Average reward: `84.000`
+- Average invalid actions: `0.000`
+- Average repeated locations: `184.000`
+
+Metrics after:
+
+- Seed rewards: `149.0`, `149.0`, `149.0`, `149.0`, `149.0`
+- Average reward: `149.000`
+- Average invalid actions: `0.000`
+- Average repeated locations: `176.000`
+
+Runtime before: `11.966s`
+
+Runtime after: `12.565s`
+
+Decision: kept
+
+Reason: Reward increased by `65.0`, invalid actions stayed at `0`, and repeated locations decreased.
+
 Commit: pending
 
 Push status: pending
 
-Next: Try one AE policy change that reduces repeated locations without lowering average reward.
+Next: Re-run state checks, then try one more AE exploration improvement or move to Docker reporting if Docker is available.

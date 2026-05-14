@@ -145,6 +145,11 @@ class AEManager:
             recency = self._location_recency(next_location)
             candidates.append((0 if recency == 0 else 1, -recency, action))
 
+        if candidates and all(candidate[0] == 1 for candidate in candidates):
+            for action in (self.ACTION_LEFT, self.ACTION_RIGHT):
+                if self._is_legal(action, action_mask):
+                    return action
+
         if candidates:
             candidates.sort()
             return candidates[0][2]
