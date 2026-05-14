@@ -247,3 +247,42 @@ Decision: kept
 Reason: Preserves the positive synthetic answer and improves conservative behavior for questions with no lexical evidence.
 
 Next experiment: Improve ASR baseline only if local assets or lightweight dependencies are available; otherwise return to AE.
+
+## ITERATION 6
+
+Task: AE
+
+Experiment: Reduce visible-tile reward multiplier from `10` to `5` so distance matters more when choosing between visible collectibles.
+
+Hypothesis: A closer resource/recon tile may beat a farther mission tile in a short episode, so a lower reward multiplier could improve collection efficiency.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -m py_compile ae\src\ae_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -c "<synthetic visible-target check>"
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -c "<AE simulation comparison against HEAD over seeds 0..4>"
+```
+
+Result:
+
+- Syntax check passed.
+- Synthetic target check returned a legal movement action.
+- AE simulation comparison with stationary other agents:
+  - Seed 0: current `84.0`, experiment `84.0`
+  - Seed 1: current `84.0`, experiment `84.0`
+  - Seed 2: current `84.0`, experiment `84.0`
+  - Seed 3: current `84.0`, experiment `84.0`
+  - Seed 4: current `84.0`, experiment `84.0`
+
+Runtime: local five-seed comparison completed in about 59 seconds after dependencies were available.
+
+Decision: reverted
+
+Reason: No measured gain versus the current AE policy.
+
+Next experiment: Re-check repo state and look for a measurable CV or noising sanity improvement.
