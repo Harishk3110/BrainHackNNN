@@ -474,3 +474,53 @@ Commit: pending
 Push status: pending
 
 Next: Re-check Docker availability; if still blocked, continue with one AE policy experiment.
+
+## ITERATION 11
+
+Task: AE
+
+Experiment: Add `--opponents stay|random` to the local AE evaluator and seed random opponent action spaces.
+
+Hypothesis: The previous local evaluator used stationary opponents, while the official evaluator samples random actions for other agents. Adding a seeded random-opponent mode gives a more realistic and repeatable validation metric before further policy changes.
+
+Files changed:
+
+- `scripts/eval_ae_local.py`
+- `METRICS_REPORT.md`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -m py_compile scripts\eval_ae_local.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents stay
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+```
+
+Metrics before:
+
+- Stay-opponent average reward: `182.000`
+- Random-opponent metric: not available in reusable evaluator.
+
+Metrics after:
+
+- Stay-opponent average reward: `182.000`
+- Stay-opponent invalid actions: `0.000`
+- Stay-opponent repeated locations: `179.000`
+- Seeded-random-opponent seed rewards: `16.0`, `46.0`, `182.0`, `112.0`, `51.0`
+- Seeded-random-opponent average reward: `81.400`
+- Seeded-random-opponent invalid actions: `0.000`
+- Seeded-random-opponent repeated locations: `168.000`
+
+Runtime before: `25.898s` for stay-opponent run.
+
+Runtime after: `25.016s` for stay-opponent run; `29.520s` for seeded-random-opponent run.
+
+Decision: kept
+
+Reason: Adds a more official-like deterministic metric without changing task policy behavior.
+
+Commit: pending
+
+Push status: pending
+
+Next: Optimize AE against seeded random opponents while preserving stay-opponent score.

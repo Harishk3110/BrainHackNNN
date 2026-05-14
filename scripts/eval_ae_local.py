@@ -28,12 +28,18 @@ def to_jsonable_observation(observation: dict) -> dict:
     }
 
 
-def run_seed(seed: int, max_agent_steps: int | None = None) -> dict[str, float | int]:
+def run_seed(
+    seed: int,
+    max_agent_steps: int | None = None,
+    opponent_mode: str = "stay",
+) -> dict[str, float | int | str]:
     cfg = default_config()
     cfg.env.novice = True
     cfg.env.render_mode = None
     env = bomberman_env.basic_env(env_wrappers=[], cfg=cfg)
     env.reset(seed=seed)
+    for index, agent in enumerate(env.possible_agents):
+        env.action_space(agent).seed(seed + index)
 
     controlled_agent = env.possible_agents[0]
     manager = AEManager()
@@ -74,7 +80,10 @@ def run_seed(seed: int, max_agent_steps: int | None = None) -> dict[str, float |
                 env.step(action)
                 break
         else:
-            action = 4 if observation["action_mask"][4] else None
+            if opponent_mode == "random":
+                action = env.action_space(current_agent).sample()
+            else:
+                action = 4 if observation["action_mask"][4] else None
 
         env.step(action)
 
@@ -88,6 +97,7 @@ def run_seed(seed: int, max_agent_steps: int | None = None) -> dict[str, float |
         "repeated_locations": repeated_locations,
         "runtime_sec": runtime,
         "agent_steps": agent_steps,
+        "opponent_mode": opponent_mode,
     }
 
 
@@ -95,9 +105,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2, 3, 4])
     parser.add_argument("--max-agent-steps", type=int, default=None)
+    parser.add_argument("--opponents", choices=["stay", "random"], default="stay")
     args = parser.parse_args()
 
-    results = [run_seed(seed, args.max_agent_steps) for seed in args.seeds]
+    results = [
+        run_seed(seed, args.max_agent_steps, opponent_mode=args.opponents)
+        for seed in args.seeds
+    ]
     avg_reward = sum(float(result["reward"]) for result in results) / len(results)
     avg_invalid = sum(int(result["invalid_actions"]) for result in results) / len(results)
     avg_repeats = sum(int(result["repeated_locations"]) for result in results) / len(results)
@@ -105,7 +119,7 @@ def main() -> None:
 
     for result in results:
         print(
-            "seed={seed} reward={reward:.1f} invalid={invalid_actions} "
+            "seed={seed} opponents={opponent_mode} reward={reward:.1f} invalid={invalid_actions} "
             "repeats={repeated_locations} steps={agent_steps} runtime={runtime_sec:.3f}s".format(
                 **result
             )

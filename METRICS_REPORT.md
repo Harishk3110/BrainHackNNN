@@ -104,6 +104,7 @@ Reusable local command:
 
 ```powershell
 $env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
 ```
 
 Current best local AE result:
@@ -119,6 +120,12 @@ Current best local AE result:
   - average invalid actions: `0.000`
   - average repeated locations: `179.000`
   - total runtime: `25.898s`
+- Current seeded-random-opponent evaluator result over seeds `0..4`:
+  - per-seed reward: `16.0`, `46.0`, `182.0`, `112.0`, `51.0`
+  - average reward: `81.400`
+  - average invalid actions: `0.000`
+  - average repeated locations: `168.000`
+  - total runtime: `29.520s`
 - Reverted experiments:
   - opportunistic bomb placement: neutral at `84.0` vs `84.0`.
   - target weighting multiplier change: neutral at `84.0` vs `84.0`.
