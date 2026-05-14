@@ -95,3 +95,45 @@ Decision: kept
 Reason: Improves simulated AE reward versus baseline on deterministic seeds, preserves interface, adds no dependencies, and remains fast.
 
 Next experiment: Add AE anti-loop exploration memory for cases with no visible collectible target.
+
+## ITERATION 2
+
+Task: AE
+
+Experiment: Add recent-location memory to choose less recently visited legal movement when no collectible is visible.
+
+Hypothesis: The visible-tile policy still defaults to forward-first exploration when no reward tile is visible; a tiny memory should reduce loops and improve reward without affecting visible target pursuit.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -m py_compile ae\src\ae_manager.py
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.14 python -c "<target and memory behavior checks>"
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python -c "<AE simulation comparison against iteration 1 over seeds 0..4>"
+```
+
+Result:
+
+- Target behavior preserved: mission ahead -> `FORWARD`.
+- Memory behavior checks:
+  - initial no-target state -> `FORWARD`
+  - continued no-target state -> `FORWARD` when next forward tile is new
+  - masked forward -> `BACKWARD` when legal
+- AE simulation comparison with stationary other agents:
+  - Seed 0: iteration 1 `55.0`, experiment `84.0`
+  - Seed 1: iteration 1 `55.0`, experiment `84.0`
+  - Seed 2: iteration 1 `55.0`, experiment `84.0`
+  - Seed 3: iteration 1 `55.0`, experiment `84.0`
+  - Seed 4: iteration 1 `55.0`, experiment `84.0`
+
+Runtime: local five-seed comparison completed in about 64 seconds.
+
+Decision: kept
+
+Reason: Improves deterministic AE reward, preserves action validity and visible-target behavior, and adds no dependencies.
+
+Next experiment: Add opportunistic bomb placement near visible enemy bases or enemy agents.
