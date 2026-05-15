@@ -973,3 +973,46 @@ Commit: none
 Push status: not needed
 
 Next: Try a narrower AE change; preserve `RECENT_LIMIT = 12`.
+
+## ITERATION 18
+
+Task: AE
+
+Experiment: Break no-target spin loops after repeatedly staying on the same cell.
+
+Hypothesis: When no target is visible, the policy sometimes spends many controlled turns rotating on one cell. Tracking a same-location streak and forcing movement after several turns might improve exploration.
+
+Files changed: `ae/src/ae_manager.py` during the trial; reverted after validation.
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 5 6 7 8 9
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 5 6 7 8 9 --opponents random
+Get-Content test\test_ae.py
+```
+
+Metrics before:
+
+- Stay opponents seeds `0..4`: average reward `195.000`, invalid actions `0.000`, repeated locations `177.000`.
+- Random opponents seeds `0..4`: average reward `154.200`, invalid actions `0.000`, repeated locations `159.400`.
+- Random opponents seeds `0..9`: average reward `164.800`, invalid actions `0.000`, repeated locations `156.100`.
+
+Metrics after:
+
+- Stay opponents seeds `0..4`: average reward `202.000`, invalid actions `0.000`, repeated locations `177.000`, runtime `7.230s`.
+- Random opponents seeds `0..4`: average reward `149.200`, invalid actions `0.000`, repeated locations `151.600`, runtime `8.997s`.
+- Stay opponents seeds `0..9`: average reward `202.000`, invalid actions `0.000`, repeated locations `177.000`, runtime `23.691s`.
+- Random opponents seeds `0..9`: average reward `149.600`, invalid actions `0.000`, repeated locations `146.900`, runtime `32.450s`.
+
+Decision: reverted
+
+Reason: Official `test/test_ae.py` uses random actions for other agents. The random-opponent proxy got worse even though stationary-opponent reward improved.
+
+Commit: none
+
+Push status: not needed
+
+Next: Continue AE experiments against random opponents as the primary proxy.
