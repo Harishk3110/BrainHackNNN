@@ -4,6 +4,8 @@
 # to change anything in this file.
 
 
+from json import JSONDecodeError
+
 from ae_manager import AEManager
 from fastapi import FastAPI, Request
 
@@ -19,7 +21,16 @@ async def ae(request: Request) -> dict[str, list[dict[str, int]]]:
     """
 
     # get observation, feed into model
-    input_json = await request.json()
+    global manager
+    try:
+        input_json = await request.json()
+    except JSONDecodeError:
+        manager = AEManager()
+        return {"predictions": []}
+
+    if "instances" not in input_json:
+        manager = AEManager()
+        return {"predictions": []}
 
     predictions = []
     # each is a dict with one key "observation" and the value as a dictionary observation

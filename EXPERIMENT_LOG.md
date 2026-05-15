@@ -1085,3 +1085,55 @@ Commit: none
 Push status: not needed
 
 Next: Continue AE random-opponent experiments; avoid neutral target-weight tweaks unless a diagnostic supports them.
+
+## ITERATION 20
+
+Task: AE
+
+Experiment: Handle the evaluator's no-body `POST /ae` reset call cleanly.
+
+Hypothesis: `test/test_ae.py` posts to `/ae` without JSON before each round. Returning 200 and resetting internal state avoids noisy 500s without changing normal prediction behavior.
+
+Files changed:
+
+- `ae/src/ae_server.py`
+- `DOCKER_REPORT.md`
+- `METRICS_REPORT.md`
+- `EXPERIMENT_LOG.md`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 python -m py_compile ae\src\ae_server.py ae\src\ae_manager.py
+docker build -t brainhacknnn-ae .
+docker run -d --rm -p 5005:5005 --name brainhacknnn-ae-reset-fix brainhacknnn-ae
+Invoke-RestMethod -Method Post -Uri http://localhost:5005/ae
+Invoke-RestMethod -Method Post -Uri http://localhost:5005/ae -ContentType 'application/json' -Body <minimal observation JSON>
+docker logs brainhacknnn-ae-reset-fix --tail 50
+docker stop brainhacknnn-ae-reset-fix
+docker run -d --rm -p 5005:5005 --name brainhacknnn-ae-official2 brainhacknnn-ae
+$env:TEAM_TRACK='novice'; $env:TEAM_NAME='BrainHackNNN'; $env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae --with requests --with python-dotenv --with tqdm python test\test_ae.py
+docker logs brainhacknnn-ae-official2 --tail 40
+docker stop brainhacknnn-ae-official2
+```
+
+Metrics before:
+
+- No-body `POST /ae`: HTTP `500`, `Internal Server Error`.
+- Previous official-style local AE Docker run: total rewards `1099.0`, score `0.18316666666666664`.
+
+Metrics after:
+
+- No-body `POST /ae`: HTTP `200`, `{"predictions": []}`.
+- Normal minimal `POST /ae`: `{"predictions": [{"action": 4}]}`.
+- Post-fix official-style local AE Docker run: total rewards `1042.0`, score `0.17366666666666666`.
+
+Decision: kept
+
+Reason: Fixes an evaluator-route runtime error without changing policy logic. The official-style score run is random/unseeded and completed successfully; the score difference is not treated as a policy regression.
+
+Commit: pending
+
+Push status: pending
+
+Next: Commit the compatibility fix, then continue AE policy experiments against seeded random-opponent metrics.

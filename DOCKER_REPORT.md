@@ -102,6 +102,7 @@ Smoke result:
 
 - `/health`: `{"message": "health ok"}`
 - `/ae`: `{"predictions": [{"action": 4}]}`
+- Reset-style no-body `POST /ae`: `{"predictions": []}`
 - Container stopped and removed.
 - Re-smoke-tested successfully after the latest AE policy improvement.
 
