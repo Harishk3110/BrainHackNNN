@@ -50,7 +50,7 @@ cd asr; docker build -t brainhacknnn-asr .
 | Task | Dockerfile | Entrypoint | Build Status | Smoke Status | Blocker |
 | --- | --- | --- | --- | --- | --- |
 | AE | `ae/Dockerfile` | `uvicorn ae_server:app --port 5005 --host 0.0.0.0` | Passed after latest AE policy change: `docker build -t brainhacknnn-ae .` | Passed after latest AE policy change: `/health` and `POST /ae` | None |
-| NLP | `nlp/Dockerfile` | `uvicorn nlp_server:app --port 5004 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-nlp .` | Passed: `/health`, corpus load/poll, and QA | None |
+| NLP | `nlp/Dockerfile` | `uvicorn nlp_server:app --port 5004 --host 0.0.0.0` | Passed after latest NLP token-normalization change: `docker build -t brainhacknnn-nlp .` | Passed: `/health`, corpus load/poll, and QA | None |
 | Noise | `noise/Dockerfile` | `uvicorn noise_server:app --port 5003 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-noise .` | Passed: `/health` and `POST /noise` | None |
 | CV | `cv/Dockerfile` | `uvicorn cv_server:app --port 5002 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-cv .` | Passed: `/health` and `POST /cv` | None |
 | ASR | `asr/Dockerfile` | `uvicorn asr_server:app --port 5001 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-asr .` | Passed: `/health` and `POST /asr` | None |
@@ -142,6 +142,7 @@ Smoke result:
 - `/health`: `{"message": "health ok"}`
 - corpus load: `{"predictions": [{"status": "loading"}]}` followed by poll `loaded`
 - QA: `{"predictions": [{"documents": ["DOC-1"], "answer": "Mars is red."}]}`
+- Re-smoke-tested after the latest NLP token-normalization change with singular/plural query returning `DOC-2` and answer `Blue keys are stored in locked libraries.`
 - Container stopped and removed.
 
 ## Noise Validation

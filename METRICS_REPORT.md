@@ -77,6 +77,7 @@ Current local synthetic result:
 - Positive query: `{'documents': ['DOC-1'], 'answer': 'The red key is under the garden bench.'}`
 - No-match query: `{'documents': [], 'answer': ''}`
 - Stopword-only query: `{'documents': [], 'answer': ''}`
+- Singular/plural query: `{'documents': ['DOC-2', 'DOC-1'], 'answer': 'Blue keys are stored in locked libraries.'}`
 
 Official score:
 

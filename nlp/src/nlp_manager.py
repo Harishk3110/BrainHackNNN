@@ -85,7 +85,26 @@ class NLPManager:
 
     def _tokenize(self, text: str) -> list[str]:
         tokens = re.findall(r"[a-z0-9]+", text.lower())
-        return [token for token in tokens if token not in self.STOPWORDS]
+        return [
+            normalized
+            for token in tokens
+            if token not in self.STOPWORDS
+            for normalized in [self._normalize_token(token)]
+            if normalized
+        ]
+
+    def _normalize_token(self, token: str) -> str:
+        if len(token) > 4 and token.endswith("ies"):
+            return token[:-3] + "y"
+        if len(token) > 5 and token.endswith("ing"):
+            return token[:-3]
+        if len(token) > 4 and token.endswith("ed"):
+            return token[:-2]
+        if len(token) > 4 and token.endswith("es"):
+            return token[:-2]
+        if len(token) > 3 and token.endswith("s"):
+            return token[:-1]
+        return token
 
     def _rank_documents(self, question_tokens: list[str]) -> list[tuple[float, str]]:
         if not question_tokens:

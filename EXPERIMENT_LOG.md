@@ -1137,3 +1137,55 @@ Commit: pending
 Push status: pending
 
 Next: Commit the compatibility fix, then continue AE policy experiments against seeded random-opponent metrics.
+
+## ITERATION 21
+
+Task: NLP
+
+Experiment: Add lightweight token normalization for simple suffix variants.
+
+Hypothesis: Dependency-free lexical RAG can miss obvious singular/plural and suffix matches such as `key`/`keys` and `library`/`libraries`. Conservative normalization should improve retrieval without dependencies or meaningful runtime cost.
+
+Files changed:
+
+- `nlp/src/nlp_manager.py`
+- `METRICS_REPORT.md`
+- `DOCKER_REPORT.md`
+- `EXPERIMENT_LOG.md`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 python -c "<NLP synthetic hit/miss/plural checks>"
+docker build -t brainhacknnn-nlp .
+docker run -d --rm -p 5004:5004 --name brainhacknnn-nlp-normalize brainhacknnn-nlp
+Invoke-RestMethod -Uri http://localhost:5004/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <tiny corpus JSON>
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <poll JSON>
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <singular/plural question JSON>
+docker logs brainhacknnn-nlp-normalize --tail 60
+docker stop brainhacknnn-nlp-normalize
+```
+
+Metrics before:
+
+- Existing positive/miss/stopword synthetic checks passed.
+- Singular/plural suffix matching was not explicitly handled.
+
+Metrics after:
+
+- Positive query: top document `DOC-1`; grounded answer retained.
+- No-match query: empty documents and answer.
+- Stopword-only query: empty documents and answer.
+- Singular/plural query: top document `DOC-2`; answer `Blue keys are stored in locked libraries.`
+- NLP Docker rebuild and route smoke test: passed.
+
+Decision: kept
+
+Reason: Improves dependency-free lexical matching while preserving existing synthetic behavior and Docker compatibility.
+
+Commit: pending
+
+Push status: pending
+
+Next: Re-check clean state, then continue with AE or another obvious lightweight NLP/noise validation improvement.
