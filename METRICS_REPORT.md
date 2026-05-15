@@ -100,6 +100,12 @@ Local deterministic simulation metric:
 - Invalid actions.
 - Repeated-location count.
 
+Official-style local Docker run:
+
+- Command: `TEAM_TRACK=novice` with `brainhacknnn-ae` running on port `5005`, then `uv run --no-project --python 3.11 --with ./til-26-ae --with requests --with python-dotenv --with tqdm python test/test_ae.py`
+- Result: total rewards `1099.0`; score `0.18316666666666664`.
+- Note: this is still a local random-opponent run, not a leaderboard score.
+
 Reusable local command:
 
 ```powershell

@@ -1016,3 +1016,35 @@ Commit: none
 Push status: not needed
 
 Next: Continue AE experiments against random opponents as the primary proxy.
+
+## AE OFFICIAL-STYLE LOCAL VALIDATION
+
+Task: AE
+
+Action: Run the official local AE evaluator against the current Docker image.
+
+Commands run:
+
+```powershell
+docker run -d --rm -p 5005:5005 --name brainhacknnn-ae-official brainhacknnn-ae
+$env:TEAM_TRACK='novice'; $env:TEAM_NAME='BrainHackNNN'; $env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae --with requests --with python-dotenv --with tqdm python test\test_ae.py
+docker logs brainhacknnn-ae-official --tail 80
+docker stop brainhacknnn-ae-official
+```
+
+Result:
+
+- Official local evaluator completed.
+- Total rewards: `1099.0`.
+- Score: `0.18316666666666664`.
+- Container logs showed HTTP 200 responses during evaluation.
+
+Decision: recorded
+
+Reason: This is the closest local validation to the official AE scoring path currently available.
+
+Commit: pending
+
+Push status: pending
+
+Next: Continue one-at-a-time AE experiments using random-opponent local metrics as the primary proxy.
