@@ -798,3 +798,40 @@ Commit: pending
 Push status: pending
 
 Next: Confirm data availability and then resume prioritized AE improvements.
+
+## ITERATION 14
+
+Task: AE
+
+Experiment: Prefer an alternating side turn when forward and backward have equal recency during no-target exploration.
+
+Hypothesis: The current fallback defaults to forward on exact recency ties, which can reinforce corridor loops. Turning on ties might expose new paths and reduce repeats without adding dependencies.
+
+Files changed: `ae/src/ae_manager.py` during the trial; reverted after validation.
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+```
+
+Metrics before:
+
+- Stay opponents: average reward `182.000`, invalid actions `0.000`, repeated locations `179.000`, runtime `21.869s`.
+- Random opponents: average reward `81.400`, invalid actions `0.000`, repeated locations `168.000`, runtime `27.502s`.
+
+Metrics after:
+
+- Stay opponents: average reward `84.000`, invalid actions `0.000`, repeated locations `184.000`, runtime `9.327s`.
+- Random opponents: average reward `38.600`, invalid actions `0.000`, repeated locations `165.200`, runtime `14.656s`.
+
+Decision: reverted
+
+Reason: Reward dropped substantially on both validation modes. The small random-opponent repeat reduction did not justify the score loss.
+
+Commit: none
+
+Push status: not needed
+
+Next: Try a narrower AE policy change that preserves the current stay-opponent path while targeting random-opponent robustness.
