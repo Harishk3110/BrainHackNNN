@@ -690,3 +690,39 @@ Commit: pending
 Push status: pending
 
 Next: Docker validation for Noise.
+
+## DOCKER VALIDATION - Noise
+
+Task: Noise
+
+Action: Build and smoke test `brainhacknnn-noise`.
+
+Commands run:
+
+```powershell
+docker build -t brainhacknnn-noise .
+docker run -d --rm -p 5003:5003 --name brainhacknnn-noise-smoke brainhacknnn-noise
+Invoke-RestMethod -Uri http://localhost:5003/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5003/noise -ContentType 'application/json' -Body <tiny JPEG JSON>
+docker logs brainhacknnn-noise-smoke --tail 80
+docker stop brainhacknnn-noise-smoke
+```
+
+Result:
+
+- Build passed.
+- `/health` returned `health ok`.
+- `POST /noise` returned one base64-encoded JPEG prediction.
+- Logs showed HTTP 200 for both smoke requests.
+
+Runtime: build completed using cached base layers; smoke requests completed in seconds.
+
+Decision: kept
+
+Reason: Noise Docker image is buildable and the official server interface responds correctly.
+
+Commit: pending
+
+Push status: pending
+
+Next: Docker validation for CV.
