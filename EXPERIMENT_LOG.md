@@ -835,3 +835,40 @@ Commit: none
 Push status: not needed
 
 Next: Try a narrower AE policy change that preserves the current stay-opponent path while targeting random-opponent robustness.
+
+## ITERATION 15
+
+Task: AE
+
+Experiment: Correct the target-selection viewcone center row from fixed `2` to `len(viewcone) // 2`.
+
+Hypothesis: The README describes `agent_viewcone` as `7 x 5` and centered on the agent, so row `3` might be the correct center for steering toward visible reward tiles.
+
+Files changed: `ae/src/ae_manager.py` during the trial; reverted after validation.
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+```
+
+Metrics before:
+
+- Stay opponents: average reward `182.000`, invalid actions `0.000`, repeated locations `179.000`, runtime `21.869s`.
+- Random opponents: average reward `81.400`, invalid actions `0.000`, repeated locations `168.000`, runtime `27.502s`.
+
+Metrics after:
+
+- Stay opponents: average reward `0.000`, invalid actions `0.000`, repeated locations `198.000`, runtime `20.763s`.
+- Random opponents: average reward `-119.200`, invalid actions `0.000`, repeated locations `197.400`, runtime `25.997s`.
+
+Decision: reverted
+
+Reason: Reward collapsed on both validation modes. The environment's oriented view appears to align with the existing row offset used by the current heuristic.
+
+Commit: none
+
+Push status: not needed
+
+Next: Inspect AE observations/evaluator behavior before another policy edit; prioritize changes that do not disturb current visible-target steering.
