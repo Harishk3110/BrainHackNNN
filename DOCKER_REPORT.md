@@ -53,7 +53,7 @@ cd asr; docker build -t brainhacknnn-asr .
 | NLP | `nlp/Dockerfile` | `uvicorn nlp_server:app --port 5004 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-nlp .` | Passed: `/health`, corpus load/poll, and QA | None |
 | Noise | `noise/Dockerfile` | `uvicorn noise_server:app --port 5003 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-noise .` | Passed: `/health` and `POST /noise` | None |
 | CV | `cv/Dockerfile` | `uvicorn cv_server:app --port 5002 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-cv .` | Passed: `/health` and `POST /cv` | None |
-| ASR | `asr/Dockerfile` | `uvicorn asr_server:app --port 5001 --host 0.0.0.0` | Not run | Not run | Await CV documentation commit |
+| ASR | `asr/Dockerfile` | `uvicorn asr_server:app --port 5001 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-asr .` | Passed: `/health` and `POST /asr` | None |
 
 ## Smoke Test Commands
 
@@ -212,6 +212,43 @@ Smoke result:
 
 - `/health`: `{"message": "health ok"}`
 - `/cv`: `{"predictions": [[]]}` for one tiny image, matching the current empty-detector baseline.
+- Logs showed HTTP 200 for both smoke requests.
+- Container stopped and removed.
+
+## ASR Validation
+
+Build command:
+
+```powershell
+docker build -t brainhacknnn-asr .
+```
+
+Working directory:
+
+```text
+asr/
+```
+
+Build result:
+
+- Passed.
+- Image: `brainhacknnn-asr:latest`
+- Docker warning only: JSON-form CMD recommended for signal handling.
+
+Smoke commands:
+
+```powershell
+docker run -d --rm -p 5001:5001 --name brainhacknnn-asr-smoke brainhacknnn-asr
+Invoke-RestMethod -Uri http://localhost:5001/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5001/asr -ContentType 'application/json' -Body <tiny WAV JSON>
+docker logs brainhacknnn-asr-smoke --tail 80
+docker stop brainhacknnn-asr-smoke
+```
+
+Smoke result:
+
+- `/health`: `{"message": "health ok"}`
+- `/asr`: `{"predictions": [""]}` for one short silent WAV, matching the current empty-transcript baseline.
 - Logs showed HTTP 200 for both smoke requests.
 - Container stopped and removed.
 

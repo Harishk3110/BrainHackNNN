@@ -762,3 +762,39 @@ Commit: pending
 Push status: pending
 
 Next: Docker validation for ASR.
+
+## DOCKER VALIDATION - ASR
+
+Task: ASR
+
+Action: Build and smoke test `brainhacknnn-asr`.
+
+Commands run:
+
+```powershell
+docker build -t brainhacknnn-asr .
+docker run -d --rm -p 5001:5001 --name brainhacknnn-asr-smoke brainhacknnn-asr
+Invoke-RestMethod -Uri http://localhost:5001/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5001/asr -ContentType 'application/json' -Body <tiny WAV JSON>
+docker logs brainhacknnn-asr-smoke --tail 80
+docker stop brainhacknnn-asr-smoke
+```
+
+Result:
+
+- Build passed.
+- `/health` returned `health ok`.
+- `POST /asr` returned `{"predictions": [""]}` for one short silent WAV.
+- Logs showed HTTP 200 for both smoke requests.
+
+Runtime: build completed in about `15s`; smoke requests completed in seconds.
+
+Decision: kept
+
+Reason: ASR Docker image is buildable and the official server interface responds correctly. The model behavior is still the weak empty-transcript baseline.
+
+Commit: pending
+
+Push status: pending
+
+Next: Confirm data availability and then resume prioritized AE improvements.
