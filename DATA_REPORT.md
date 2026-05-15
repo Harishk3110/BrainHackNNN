@@ -1,6 +1,6 @@
 # Data Report
 
-Updated: 2026-05-14
+Updated: 2026-05-15
 
 ## Environment Summary
 
@@ -9,7 +9,7 @@ Updated: 2026-05-14
 - Global `python` / `pip`: not available on PATH.
 - `uv`: available (`uv 0.11.7`), usable with repo-local cache via `$env:UV_CACHE_DIR='.uv-cache'`.
 - Docker CLI: installed.
-- Docker daemon: not accessible from this shell. `docker ps` fails with permission/daemon access. Open Docker Desktop and wait until Docker is running before Docker validation.
+- Docker daemon: available when Docker commands are run with approved daemon access from this environment.
 
 ## Detected Repo Data / Assets
 
@@ -23,7 +23,7 @@ Detected by searching for `data`, `datasets`, `sample`, `samples`, `train`, `val
 - `test/test_utils.py`: shared evaluator batching helper.
 - `test/noise_eval/eval_thresholds_v2.yaml`: noising fairness thresholds.
 
-No repo-local `.wav`, `.mp3`, `.flac`, `.jpg`, `.jpeg`, `.png`, `.csv`, `.jsonl`, or task training datasets were found.
+No repo-local `.wav`, `.mp3`, `.flac`, `.jpg`, `.jpeg`, `.png`, `.csv`, `.jsonl`, or task training datasets were found in the current targeted recheck.
 
 ## Expected Data Formats
 

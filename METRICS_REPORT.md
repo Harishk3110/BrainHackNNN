@@ -1,13 +1,13 @@
 # Metrics Report
 
-Updated: 2026-05-14
+Updated: 2026-05-15
 
 ## Current Metric Availability
 
 - Full official metrics for ASR, CV, NLP, and Noise require `/home/jupyter/{TEAM_TRACK}` datasets and running task servers.
 - AE simulation is locally available through `uv --with ./til-26-ae`.
 - Synthetic sanity metrics are available for NLP and Noise.
-- Docker-based smoke/runtime metrics are blocked until Docker Desktop is running.
+- Docker smoke validation now passes for all five task images; full official metrics for ASR, CV, NLP, and Noise remain blocked by missing datasets/evaluator assets.
 
 ## ASR Metrics
 
@@ -172,3 +172,4 @@ Official score:
 - Noise: synthetic valid-JPEG check passes; official pass rate unavailable.
 - ASR: official score unavailable; baseline expected poor due to empty transcript output.
 - CV: official score unavailable; baseline expected `0.0` mAP due to empty detections.
+- Docker: AE, NLP, Noise, CV, and ASR images build and pass route-level smoke tests.

@@ -1,6 +1,6 @@
 # Submission Checklist
 
-Updated: 2026-05-14
+Updated: 2026-05-15
 
 ## Git
 
@@ -16,7 +16,7 @@ Updated: 2026-05-14
 - `brainhacknnn-nlp`
 - `brainhacknnn-ae`
 
-Docker build validation is blocked locally until Docker Desktop is running and daemon access works.
+Docker build validation passed locally for all five images when Docker commands were run with approved daemon access.
 
 ## Build Commands
 
@@ -99,7 +99,7 @@ til submit ae
 - Missing local official datasets under `/home/jupyter/{TEAM_TRACK}`.
 - `til` CLI is not available in this local Windows shell.
 - Global `python` and `pip` are not on PATH; `uv` is used for local checks.
-- Docker daemon is inaccessible until Docker Desktop is running.
+- Docker daemon access requires approved Docker commands from this environment.
 - ASR and CV are still valid interface baselines but not accuracy models.
 - NLP official score cannot be measured without NLP data/evaluator assets.
 
@@ -123,7 +123,7 @@ Provide exact paths for:
 
 - Git status clean.
 - All commits pushed.
-- Docker builds complete for all five images.
+- Docker builds complete for all five images. Done.
 - All five `/health` endpoints pass inside containers.
 - Official `til test` run recorded for each task on GCP Workbench.
 - Metrics copied into `METRICS_REPORT.md`.
