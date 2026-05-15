@@ -1048,3 +1048,40 @@ Commit: pending
 Push status: pending
 
 Next: Continue one-at-a-time AE experiments using random-opponent local metrics as the primary proxy.
+
+## ITERATION 19
+
+Task: AE
+
+Experiment: Increase resource tile priority from `2.0` to `3.0`.
+
+Hypothesis: A slightly higher resource weight may improve collection under random opponents without changing runtime or interfaces.
+
+Files changed: `ae/src/ae_manager.py` during the trial; reverted after validation.
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+```
+
+Metrics before:
+
+- Stay opponents: average reward `195.000`, invalid actions `0.000`, repeated locations `177.000`.
+- Random opponents: average reward `154.200`, invalid actions `0.000`, repeated locations `159.400`.
+
+Metrics after:
+
+- Stay opponents: average reward `195.000`, invalid actions `0.000`, repeated locations `177.000`, runtime `20.285s`.
+- Random opponents: average reward `154.200`, invalid actions `0.000`, repeated locations `159.400`, runtime `26.427s`.
+
+Decision: reverted
+
+Reason: No reward or repeat-count improvement.
+
+Commit: none
+
+Push status: not needed
+
+Next: Continue AE random-opponent experiments; avoid neutral target-weight tweaks unless a diagnostic supports them.
