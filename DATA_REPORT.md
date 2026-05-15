@@ -15,6 +15,8 @@ Updated: 2026-05-15
 
 Detected by searching for `data`, `datasets`, `sample`, `samples`, `train`, `val`, `validation`, `test`, `assets`, `annotations`, `labels`, `.csv`, `.json`, `.jsonl`, `.wav`, `.mp3`, `.flac`, `.jpg`, `.jpeg`, `.png`.
 
+Latest targeted scan on 2026-05-15 excluded `.uv-cache` and `__pycache__` so dependency-cache examples are not counted as competition data.
+
 - `test/test_asr.py`: official ASR local evaluator script.
 - `test/test_cv.py`: official CV local evaluator script.
 - `test/test_noise.py`: official noising local evaluator script.
@@ -23,7 +25,14 @@ Detected by searching for `data`, `datasets`, `sample`, `samples`, `train`, `val
 - `test/test_utils.py`: shared evaluator batching helper.
 - `test/noise_eval/eval_thresholds_v2.yaml`: noising fairness thresholds.
 
-No repo-local `.wav`, `.mp3`, `.flac`, `.jpg`, `.jpeg`, `.png`, `.csv`, `.jsonl`, or task training datasets were found in the current targeted recheck.
+No repo-local ASR audio/transcript files, CV images/annotations, or NLP question/document datasets were found in the current targeted recheck.
+
+Targeted scan results:
+
+- ASR audio/transcripts: none found. Matches were source/evaluator files only: `asr/src/asr_server.py`, `asr/src/asr_manager.py`, `test/test_asr.py`.
+- CV images/annotations: none found.
+- NLP docs/questions: none found. Matches were source/evaluator/requirements files only, not datasets.
+- Dataset-like directories: none found outside dependency caches.
 
 ## Expected Data Formats
 
@@ -118,6 +127,12 @@ Needed from user if outside repo:
 - Exact local path to ASR data.
 - Exact local path to CV image/annotation data.
 - Exact local path to NLP question/document data.
+
+Exact expected local layouts if data is provided:
+
+- ASR: directory containing `asr.jsonl` plus the referenced audio files.
+- CV: directory containing `annotations.json` and an `images/` subdirectory.
+- NLP: directory containing `nlp.jsonl`, `documents/`, and optionally `models/nlp_eval_512.zip`.
 
 ## Task Trainability Now
 
