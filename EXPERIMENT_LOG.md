@@ -615,3 +615,39 @@ Commit: pending
 Push status: pending
 
 Next: Continue with a different AE policy experiment or wait for dataset paths for ASR/CV/NLP official evaluation.
+
+## DOCKER VALIDATION - AE
+
+Task: AE
+
+Action: Build and smoke test `brainhacknnn-ae`.
+
+Commands run:
+
+```powershell
+docker build -t brainhacknnn-ae .
+docker run -d --rm -p 5005:5005 --name brainhacknnn-ae-smoke brainhacknnn-ae
+Invoke-RestMethod -Uri http://localhost:5005/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5005/ae -ContentType 'application/json' -Body <minimal observation JSON>
+docker logs brainhacknnn-ae-smoke --tail 50
+docker stop brainhacknnn-ae-smoke
+```
+
+Result:
+
+- Build passed.
+- `/health` returned `health ok`.
+- `POST /ae` returned action `4` for a mask where only `STAY` was legal.
+- Logs showed HTTP 200 for both smoke requests.
+
+Runtime: build about `22s`; smoke requests completed in seconds.
+
+Decision: kept
+
+Reason: AE Docker image is buildable and the official server interface responds correctly.
+
+Commit: pending
+
+Push status: pending
+
+Next: Docker validation for NLP.
