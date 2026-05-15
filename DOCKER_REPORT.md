@@ -50,7 +50,7 @@ cd asr; docker build -t brainhacknnn-asr .
 | Task | Dockerfile | Entrypoint | Build Status | Smoke Status | Blocker |
 | --- | --- | --- | --- | --- | --- |
 | AE | `ae/Dockerfile` | `uvicorn ae_server:app --port 5005 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-ae .` | Passed: `/health` and `POST /ae` | None |
-| NLP | `nlp/Dockerfile` | `uvicorn nlp_server:app --port 5004 --host 0.0.0.0` | Not run | Not run | Await AE result |
+| NLP | `nlp/Dockerfile` | `uvicorn nlp_server:app --port 5004 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-nlp .` | Passed: `/health`, corpus load/poll, and QA | None |
 | Noise | `noise/Dockerfile` | `uvicorn noise_server:app --port 5003 --host 0.0.0.0` | Not run | Not run | Await NLP result |
 | CV | `cv/Dockerfile` | `uvicorn cv_server:app --port 5002 --host 0.0.0.0` | Not run | Not run | Await Noise result |
 | ASR | `asr/Dockerfile` | `uvicorn asr_server:app --port 5001 --host 0.0.0.0` | Not run | Not run | Await CV result |
@@ -101,6 +101,44 @@ Smoke result:
 
 - `/health`: `{"message": "health ok"}`
 - `/ae`: `{"predictions": [{"action": 4}]}`
+- Container stopped and removed.
+
+## NLP Validation
+
+Build command:
+
+```powershell
+docker build -t brainhacknnn-nlp .
+```
+
+Working directory:
+
+```text
+nlp/
+```
+
+Build result:
+
+- Passed.
+- Image: `brainhacknnn-nlp:latest`
+- Docker warning only: JSON-form CMD recommended for signal handling.
+
+Smoke commands:
+
+```powershell
+docker run -d --rm -p 5004:5004 --name brainhacknnn-nlp-smoke brainhacknnn-nlp
+Invoke-RestMethod -Uri http://localhost:5004/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <tiny corpus JSON>
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <poll JSON>
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <question JSON>
+docker stop brainhacknnn-nlp-smoke
+```
+
+Smoke result:
+
+- `/health`: `{"message": "health ok"}`
+- corpus load: `{"predictions": [{"status": "loading"}]}` followed by poll `loaded`
+- QA: `{"predictions": [{"documents": ["DOC-1"], "answer": "Mars is red."}]}`
 - Container stopped and removed.
 
 ## Official Build Commands

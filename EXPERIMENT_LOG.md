@@ -651,3 +651,42 @@ Commit: pending
 Push status: pending
 
 Next: Docker validation for NLP.
+
+## DOCKER VALIDATION - NLP
+
+Task: NLP
+
+Action: Build and smoke test `brainhacknnn-nlp`.
+
+Commands run:
+
+```powershell
+docker build -t brainhacknnn-nlp .
+docker run -d --rm -p 5004:5004 --name brainhacknnn-nlp-smoke brainhacknnn-nlp
+Invoke-RestMethod -Uri http://localhost:5004/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <tiny corpus JSON>
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <poll JSON>
+Invoke-RestMethod -Method Post -Uri http://localhost:5004/nlp -ContentType 'application/json' -Body <question JSON>
+docker logs brainhacknnn-nlp-smoke --tail 80
+docker stop brainhacknnn-nlp-smoke
+```
+
+Result:
+
+- Build passed.
+- `/health` returned `health ok`.
+- Corpus load request returned `loading`; poll returned `loaded`.
+- QA returned document `DOC-1` and answer `Mars is red.`
+- Logs showed HTTP 200 for all smoke requests.
+
+Runtime: first NLP build took about `9m` because the large NVIDIA PyTorch base image had to be pulled; smoke requests completed in seconds.
+
+Decision: kept
+
+Reason: NLP Docker image is buildable and the official server interface responds correctly.
+
+Commit: pending
+
+Push status: pending
+
+Next: Docker validation for Noise.
