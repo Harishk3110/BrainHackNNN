@@ -6,7 +6,7 @@ Updated: 2026-05-15
 
 - Branch: `main`
 - Remote: `https://github.com/Harishk3110/BrainHackNNN.git`
-- Latest kept experiment: AE recent-target move guard.
+- Latest kept experiments: AE recent-target move guard and reset-route compatibility; NLP lexical token normalization; Noise exact-byte passthrough for valid images.
 
 ## Docker Images
 
@@ -83,7 +83,8 @@ til submit ae
 - AE invalid actions: `0.000`.
 - AE repeated locations: `177.000` over seeds `0..4` with stay opponents; `159.400` over seeds `0..4` with random opponents.
 - NLP synthetic hit/miss checks pass.
-- Noise synthetic valid-JPEG check passes.
+- NLP singular/plural lexical check passes.
+- Noise synthetic valid-JPEG check passes with identical input/output base64 for valid images.
 - ASR official metric blocked by missing data.
 - CV official metric blocked by missing data.
 
@@ -125,7 +126,7 @@ Provide exact paths for:
 - Git status clean.
 - All commits pushed.
 - Docker builds complete for all five images. Done.
-- All five `/health` endpoints pass inside containers.
-- Official `til test` run recorded for each task on GCP Workbench.
+- All five `/health` endpoints pass inside containers. Done locally.
+- Official-style AE local Docker evaluator run recorded; remaining official `til test` runs require GCP Workbench/data.
 - Metrics copied into `METRICS_REPORT.md`.
 - Known missing data warnings resolved or accepted.
