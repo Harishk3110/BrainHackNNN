@@ -172,6 +172,7 @@ Implemented/verified metrics:
 Local sanity result:
 
 - Synthetic 2x2 RGB JPEG round trip produced valid JPEG output.
+- Synthetic 3x2 RGB JPEG passthrough returned identical base64 output, preserving bytes and dimensions.
 
 Official score:
 

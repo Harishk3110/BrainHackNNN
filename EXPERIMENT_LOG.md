@@ -1189,3 +1189,50 @@ Commit: pending
 Push status: pending
 
 Next: Re-check clean state, then continue with AE or another obvious lightweight NLP/noise validation improvement.
+
+## ITERATION 22
+
+Task: Noise
+
+Experiment: Return the original image bytes after validating they decode.
+
+Hypothesis: Re-encoding JPEG introduces unnecessary perturbation and latency. For qualifier validity, exact passthrough after decode preserves dimensions and gives zero perturbation, which is the safest threshold behavior.
+
+Files changed:
+
+- `noise/src/noise_manager.py`
+- `METRICS_REPORT.md`
+- `DOCKER_REPORT.md`
+- `EXPERIMENT_LOG.md`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with pillow python -c "<synthetic noising passthrough check>"
+docker build -t brainhacknnn-noise .
+docker run -d --rm -p 5003:5003 --name brainhacknnn-noise-pass brainhacknnn-noise
+Invoke-RestMethod -Uri http://localhost:5003/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5003/noise -ContentType 'application/json' -Body <tiny JPEG JSON>
+docker logs brainhacknnn-noise-pass --tail 60
+docker stop brainhacknnn-noise-pass
+```
+
+Metrics before:
+
+- Synthetic valid-JPEG output passed, but the manager re-encoded JPEG bytes.
+
+Metrics after:
+
+- Local synthetic check: `same_bytes=True`, decoded size `(3, 2)`, mode `RGB`.
+- Docker smoke: `/health` passed.
+- Docker `/noise`: output base64 exactly matched input base64 for a valid JPEG.
+
+Decision: kept
+
+Reason: Improves validity and speed conservatively by avoiding unnecessary JPEG re-encoding while preserving decode validation and Docker compatibility.
+
+Commit: pending
+
+Push status: pending
+
+Next: Commit, then re-check overall submission state.

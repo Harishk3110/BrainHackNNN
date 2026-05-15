@@ -51,7 +51,7 @@ cd asr; docker build -t brainhacknnn-asr .
 | --- | --- | --- | --- | --- | --- |
 | AE | `ae/Dockerfile` | `uvicorn ae_server:app --port 5005 --host 0.0.0.0` | Passed after latest AE policy change: `docker build -t brainhacknnn-ae .` | Passed after latest AE policy change: `/health` and `POST /ae` | None |
 | NLP | `nlp/Dockerfile` | `uvicorn nlp_server:app --port 5004 --host 0.0.0.0` | Passed after latest NLP token-normalization change: `docker build -t brainhacknnn-nlp .` | Passed: `/health`, corpus load/poll, and QA | None |
-| Noise | `noise/Dockerfile` | `uvicorn noise_server:app --port 5003 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-noise .` | Passed: `/health` and `POST /noise` | None |
+| Noise | `noise/Dockerfile` | `uvicorn noise_server:app --port 5003 --host 0.0.0.0` | Passed after latest passthrough-validity change: `docker build -t brainhacknnn-noise .` | Passed: `/health` and `POST /noise` | None |
 | CV | `cv/Dockerfile` | `uvicorn cv_server:app --port 5002 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-cv .` | Passed: `/health` and `POST /cv` | None |
 | ASR | `asr/Dockerfile` | `uvicorn asr_server:app --port 5001 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-asr .` | Passed: `/health` and `POST /asr` | None |
 
@@ -179,6 +179,7 @@ Smoke result:
 
 - `/health`: `{"message": "health ok"}`
 - `/noise`: returned one base64-encoded JPEG prediction for the tiny input image.
+- Re-smoke-tested after passthrough-validity change; output base64 exactly matched input base64 for a valid JPEG.
 - Logs showed HTTP 200 for both smoke requests.
 - Container stopped and removed.
 

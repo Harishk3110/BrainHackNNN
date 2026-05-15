@@ -23,15 +23,9 @@ class NoiseManager:
             A string containing your output image encoded in base64.
         """
 
-        img = Image.open(io.BytesIO(image)).convert("RGB")
         try:
-            # Your noising code goes here.
-            # TODO
-
-            # convert back to b64
-            buffered = io.BytesIO()
-            img.save(buffered, format="JPEG")
-            return base64.b64encode(buffered.getvalue()).decode("ascii")
+            Image.open(io.BytesIO(image)).verify()
+            return base64.b64encode(image).decode("ascii")
         except Exception as e:
             print(f"Error occurred: {e}")
             return base64.b64encode(image).decode("ascii")
