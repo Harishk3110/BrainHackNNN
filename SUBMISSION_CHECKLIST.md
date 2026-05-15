@@ -6,7 +6,7 @@ Updated: 2026-05-15
 
 - Branch: `main`
 - Remote: `https://github.com/Harishk3110/BrainHackNNN.git`
-- Latest pushed kept experiment: `2092c5d experiment(ae): turn when movement repeats`
+- Latest kept experiment: AE recent-target move guard.
 
 ## Docker Images
 
@@ -78,9 +78,10 @@ til submit ae
 
 ## Latest Local Metrics
 
-- AE local deterministic reward: average `149.000` over seeds `0..4`.
+- AE local deterministic reward: average `195.000` over seeds `0..4` and `0..9`.
+- AE local random-opponent reward: average `154.200` over seeds `0..4`; `164.800` over seeds `0..9`.
 - AE invalid actions: `0.000`.
-- AE repeated locations: `176.000`.
+- AE repeated locations: `177.000` over seeds `0..4` with stay opponents; `159.400` over seeds `0..4` with random opponents.
 - NLP synthetic hit/miss checks pass.
 - Noise synthetic valid-JPEG check passes.
 - ASR official metric blocked by missing data.

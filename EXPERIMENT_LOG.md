@@ -872,3 +872,67 @@ Commit: none
 Push status: not needed
 
 Next: Inspect AE observations/evaluator behavior before another policy edit; prioritize changes that do not disturb current visible-target steering.
+
+## ITERATION 16
+
+Task: AE
+
+Experiment: Ignore visible-target move actions when that move immediately returns to a recently visited cell.
+
+Hypothesis: The current policy can get stuck chasing visible reward channels on cells it just visited. Skipping target-driven forward/backward moves into recent cells should break short loops while preserving legal target steering and side-turn decisions.
+
+Files changed:
+
+- `ae/src/ae_manager.py`
+- `METRICS_REPORT.md`
+- `DOCKER_REPORT.md`
+- `EXPERIMENT_LOG.md`
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 5 6 7 8 9
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 5 6 7 8 9 --opponents random
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 python -m py_compile ae\src\ae_manager.py
+docker build -t brainhacknnn-ae .
+docker run -d --rm -p 5005:5005 --name brainhacknnn-ae-smoke brainhacknnn-ae
+Invoke-RestMethod -Uri http://localhost:5005/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5005/ae -ContentType 'application/json' -Body <minimal observation JSON>
+docker logs brainhacknnn-ae-smoke --tail 60
+docker stop brainhacknnn-ae-smoke
+```
+
+Metrics before:
+
+- Stay opponents seeds `0..4`: average reward `182.000`, invalid actions `0.000`, repeated locations `179.000`, runtime `21.869s`.
+- Random opponents seeds `0..4`: average reward `81.400`, invalid actions `0.000`, repeated locations `168.000`, runtime `27.502s`.
+
+Metrics after:
+
+- Stay opponents seeds `0..4`: average reward `195.000`, invalid actions `0.000`, repeated locations `177.000`, runtime `15.673s`.
+- Random opponents seeds `0..4`: average reward `154.200`, invalid actions `0.000`, repeated locations `159.400`, runtime `22.198s`.
+- Stay opponents seeds `0..9`: average reward `195.000`, invalid actions `0.000`, repeated locations `177.000`, runtime `31.366s`.
+- Random opponents seeds `0..9`: average reward `164.800`, invalid actions `0.000`, repeated locations `156.100`, runtime `40.408s`.
+- AE Docker rebuild and route smoke test: passed.
+
+Runtime before:
+
+- Stay opponents seeds `0..4`: `21.869s`
+- Random opponents seeds `0..4`: `27.502s`
+
+Runtime after:
+
+- Stay opponents seeds `0..4`: `15.673s`
+- Random opponents seeds `0..4`: `22.198s`
+
+Decision: kept
+
+Reason: Improved measured AE reward in both validation modes, reduced repeated locations, preserved zero invalid actions, and passed Docker smoke validation.
+
+Commit: pending
+
+Push status: pending
+
+Next: Re-check clean state, then choose one more AE experiment unless a dataset path appears for ASR/CV/NLP.

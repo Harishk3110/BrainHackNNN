@@ -115,17 +115,20 @@ Current best local AE result:
 - Turn-on-revisited-corridor exploration: `149.0` reward on seeds `0..4`.
 - Alternating repeated-corridor turns: `182.0` reward on seeds `0..4`.
 - Current reusable evaluator result over seeds `0..4`:
-  - per-seed reward: `182.0`, `182.0`, `182.0`, `182.0`, `182.0`
-  - average reward: `182.000`
+  - per-seed reward: `195.0`, `195.0`, `195.0`, `195.0`, `195.0`
+  - average reward: `195.000`
   - average invalid actions: `0.000`
-  - average repeated locations: `179.000`
-  - total runtime: `25.898s`
+  - average repeated locations: `177.000`
+  - total runtime: `15.673s`
 - Current seeded-random-opponent evaluator result over seeds `0..4`:
-  - per-seed reward: `16.0`, `46.0`, `182.0`, `112.0`, `51.0`
-  - average reward: `81.400`
+  - per-seed reward: `84.0`, `245.0`, `195.0`, `149.0`, `98.0`
+  - average reward: `154.200`
   - average invalid actions: `0.000`
-  - average repeated locations: `168.000`
-  - total runtime: `29.520s`
+  - average repeated locations: `159.400`
+  - total runtime: `22.198s`
+- Expanded AE validation over seeds `0..9`:
+  - stay opponents: average reward `195.000`, invalid actions `0.000`, repeated locations `177.000`, total runtime `31.366s`
+  - random opponents: average reward `164.800`, invalid actions `0.000`, repeated locations `156.100`, total runtime `40.408s`
 - Reverted experiments:
   - opportunistic bomb placement: neutral at `84.0` vs `84.0`.
   - target weighting multiplier change: neutral at `84.0` vs `84.0`.
@@ -135,6 +138,7 @@ Current best policy:
 - `ae/src/ae_manager.py`
 - Chooses legal actions.
 - Steers toward visible mission/resource/recon tiles.
+- Avoids moving toward visible targets if that forward/backward move immediately revisits a recent location.
 - Uses recent-location memory to reduce loops when no reward tile is visible.
 - Turns left/right when forward and backward both lead to recently visited locations.
 - Alternates repeated-corridor turn preference between left and right.
@@ -167,7 +171,7 @@ Official score:
 
 ## Current Best Metrics Summary
 
-- AE: best measured local deterministic reward `182.0` on seeds `0..4` with stationary other agents; invalid actions `0`.
+- AE: best measured local deterministic reward `195.0` on seeds `0..4` and `0..9` with stationary other agents; invalid actions `0`.
 - NLP: synthetic retrieval/answer checks pass; official score unavailable.
 - Noise: synthetic valid-JPEG check passes; official pass rate unavailable.
 - ASR: official score unavailable; baseline expected poor due to empty transcript output.

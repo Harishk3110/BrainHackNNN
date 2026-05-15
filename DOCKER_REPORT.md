@@ -49,7 +49,7 @@ cd asr; docker build -t brainhacknnn-asr .
 
 | Task | Dockerfile | Entrypoint | Build Status | Smoke Status | Blocker |
 | --- | --- | --- | --- | --- | --- |
-| AE | `ae/Dockerfile` | `uvicorn ae_server:app --port 5005 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-ae .` | Passed: `/health` and `POST /ae` | None |
+| AE | `ae/Dockerfile` | `uvicorn ae_server:app --port 5005 --host 0.0.0.0` | Passed after latest AE policy change: `docker build -t brainhacknnn-ae .` | Passed after latest AE policy change: `/health` and `POST /ae` | None |
 | NLP | `nlp/Dockerfile` | `uvicorn nlp_server:app --port 5004 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-nlp .` | Passed: `/health`, corpus load/poll, and QA | None |
 | Noise | `noise/Dockerfile` | `uvicorn noise_server:app --port 5003 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-noise .` | Passed: `/health` and `POST /noise` | None |
 | CV | `cv/Dockerfile` | `uvicorn cv_server:app --port 5002 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-cv .` | Passed: `/health` and `POST /cv` | None |
@@ -86,6 +86,7 @@ Build result:
 - Passed.
 - Image: `brainhacknnn-ae:latest`
 - Docker warning only: JSON-form CMD recommended for signal handling.
+- Rebuilt successfully after the latest AE policy improvement.
 
 Smoke commands:
 
@@ -102,6 +103,7 @@ Smoke result:
 - `/health`: `{"message": "health ok"}`
 - `/ae`: `{"predictions": [{"action": 4}]}`
 - Container stopped and removed.
+- Re-smoke-tested successfully after the latest AE policy improvement.
 
 ## NLP Validation
 

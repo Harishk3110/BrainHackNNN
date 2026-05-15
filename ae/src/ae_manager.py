@@ -43,7 +43,9 @@ class AEManager:
             action_mask = []
 
         target_action = self._action_toward_best_visible_tile(observation)
-        if self._is_legal(target_action, action_mask):
+        if self._is_legal(target_action, action_mask) and not self._move_was_recent(
+            observation, target_action
+        ):
             return target_action
 
         explore_action = self._least_recent_move(observation, action_mask)
@@ -172,6 +174,18 @@ class AEManager:
         if action == self.ACTION_BACKWARD:
             dx, dy = -dx, -dy
         return location[0] + dx, location[1] + dy
+
+    def _move_was_recent(self, observation: dict, action: int | None) -> bool:
+        if action not in (self.ACTION_FORWARD, self.ACTION_BACKWARD):
+            return False
+
+        location = observation.get("location")
+        direction = observation.get("direction")
+        if not isinstance(location, list) or len(location) < 2 or not isinstance(direction, int):
+            return False
+
+        current = (int(location[0]), int(location[1]))
+        return self._location_recency(self._next_location(current, direction, action)) > 0
 
     def _direction_delta(self, direction: int) -> tuple[int, int]:
         match direction:
