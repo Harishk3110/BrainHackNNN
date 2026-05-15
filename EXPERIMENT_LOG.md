@@ -931,8 +931,45 @@ Decision: kept
 
 Reason: Improved measured AE reward in both validation modes, reduced repeated locations, preserved zero invalid actions, and passed Docker smoke validation.
 
-Commit: pending
+Commit: `c748392 experiment(ae): avoid recently visited target moves`
 
-Push status: pending
+Push status: pushed to `origin/main`
 
 Next: Re-check clean state, then choose one more AE experiment unless a dataset path appears for ASR/CV/NLP.
+
+## ITERATION 17
+
+Task: AE
+
+Experiment: Increase recent-location memory from `12` to `20`.
+
+Hypothesis: With the recent-target guard in place, a longer memory may avoid revisiting stale reward-looking cells and reduce loops further.
+
+Files changed: `ae/src/ae_manager.py` during the trial; reverted after validation.
+
+Commands run:
+
+```powershell
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4
+$env:UV_CACHE_DIR='.uv-cache'; uv run --no-project --python 3.11 --with ./til-26-ae python scripts\eval_ae_local.py --seeds 0 1 2 3 4 --opponents random
+```
+
+Metrics before:
+
+- Stay opponents: average reward `195.000`, invalid actions `0.000`, repeated locations `177.000`.
+- Random opponents: average reward `154.200`, invalid actions `0.000`, repeated locations `159.400`.
+
+Metrics after:
+
+- Stay opponents: average reward `161.000`, invalid actions `0.000`, repeated locations `177.000`, runtime `8.205s`.
+- Random opponents: average reward `84.400`, invalid actions `0.000`, repeated locations `154.600`, runtime `10.465s`.
+
+Decision: reverted
+
+Reason: Reward dropped substantially in both modes. The small random-opponent repeat reduction did not justify the score loss.
+
+Commit: none
+
+Push status: not needed
+
+Next: Try a narrower AE change; preserve `RECENT_LIMIT = 12`.
