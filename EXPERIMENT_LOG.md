@@ -726,3 +726,39 @@ Commit: pending
 Push status: pending
 
 Next: Docker validation for CV.
+
+## DOCKER VALIDATION - CV
+
+Task: CV
+
+Action: Build and smoke test `brainhacknnn-cv`.
+
+Commands run:
+
+```powershell
+docker build -t brainhacknnn-cv .
+docker run -d --rm -p 5002:5002 --name brainhacknnn-cv-smoke brainhacknnn-cv
+Invoke-RestMethod -Uri http://localhost:5002/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5002/cv -ContentType 'application/json' -Body <tiny JPEG JSON>
+docker logs brainhacknnn-cv-smoke --tail 80
+docker stop brainhacknnn-cv-smoke
+```
+
+Result:
+
+- Build passed.
+- `/health` returned `health ok`.
+- `POST /cv` returned `{"predictions": [[]]}` for one tiny image.
+- Logs showed HTTP 200 for both smoke requests.
+
+Runtime: build completed in about `12s`; smoke requests completed in seconds.
+
+Decision: kept
+
+Reason: CV Docker image is buildable and the official server interface responds correctly. The model behavior is still the weak empty-detector baseline.
+
+Commit: pending
+
+Push status: pending
+
+Next: Docker validation for ASR.

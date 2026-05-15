@@ -52,8 +52,8 @@ cd asr; docker build -t brainhacknnn-asr .
 | AE | `ae/Dockerfile` | `uvicorn ae_server:app --port 5005 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-ae .` | Passed: `/health` and `POST /ae` | None |
 | NLP | `nlp/Dockerfile` | `uvicorn nlp_server:app --port 5004 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-nlp .` | Passed: `/health`, corpus load/poll, and QA | None |
 | Noise | `noise/Dockerfile` | `uvicorn noise_server:app --port 5003 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-noise .` | Passed: `/health` and `POST /noise` | None |
-| CV | `cv/Dockerfile` | `uvicorn cv_server:app --port 5002 --host 0.0.0.0` | Not run | Not run | Await Noise documentation commit |
-| ASR | `asr/Dockerfile` | `uvicorn asr_server:app --port 5001 --host 0.0.0.0` | Not run | Not run | Await CV result |
+| CV | `cv/Dockerfile` | `uvicorn cv_server:app --port 5002 --host 0.0.0.0` | Passed: `docker build -t brainhacknnn-cv .` | Passed: `/health` and `POST /cv` | None |
+| ASR | `asr/Dockerfile` | `uvicorn asr_server:app --port 5001 --host 0.0.0.0` | Not run | Not run | Await CV documentation commit |
 
 ## Smoke Test Commands
 
@@ -175,6 +175,43 @@ Smoke result:
 
 - `/health`: `{"message": "health ok"}`
 - `/noise`: returned one base64-encoded JPEG prediction for the tiny input image.
+- Logs showed HTTP 200 for both smoke requests.
+- Container stopped and removed.
+
+## CV Validation
+
+Build command:
+
+```powershell
+docker build -t brainhacknnn-cv .
+```
+
+Working directory:
+
+```text
+cv/
+```
+
+Build result:
+
+- Passed.
+- Image: `brainhacknnn-cv:latest`
+- Docker warning only: JSON-form CMD recommended for signal handling.
+
+Smoke commands:
+
+```powershell
+docker run -d --rm -p 5002:5002 --name brainhacknnn-cv-smoke brainhacknnn-cv
+Invoke-RestMethod -Uri http://localhost:5002/health
+Invoke-RestMethod -Method Post -Uri http://localhost:5002/cv -ContentType 'application/json' -Body <tiny JPEG JSON>
+docker logs brainhacknnn-cv-smoke --tail 80
+docker stop brainhacknnn-cv-smoke
+```
+
+Smoke result:
+
+- `/health`: `{"message": "health ok"}`
+- `/cv`: `{"predictions": [[]]}` for one tiny image, matching the current empty-detector baseline.
 - Logs showed HTTP 200 for both smoke requests.
 - Container stopped and removed.
 
